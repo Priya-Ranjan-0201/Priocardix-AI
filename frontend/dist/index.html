@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+    <!-- GLOBAL ERROR HANDLER FOR AUTONOMOUS DEBUGGING -->
+    <script>
+      window.addEventListener('error', function(e) {
+        document.body.innerHTML += '<div id="fatal-runtime-err" style="position:fixed;top:0;left:0;padding:20px;background:red;color:white;z-index:99999;width:100vw;height:100vh;"><h2>FATAL CRASH</h2><pre>' + e.message + '\n' + (e.error ? e.error.stack : '') + '</pre></div>';
+      });
+      window.addEventListener('unhandledrejection', function(event) {
+        document.body.innerHTML += '<div id="fatal-runtime-err" style="position:fixed;top:0;left:0;padding:20px;background:red;color:white;z-index:99999;width:100vw;height:100vh;"><h2>PROMISE CRASH</h2><pre>' + String(event.reason) + '</pre></div>';
+      });
+      
+      const originalConsoleError = console.error;
+      console.error = function(...args) {
+          document.body.innerHTML += '<div id="fatal-runtime-err-console" style="position:fixed;top:0;left:0;padding:20px;background:maroon;color:white;z-index:99999;width:100vw;height:100vh;"><h2>CONSOLE ERROR</h2><pre>' + args.join(" ") + '</pre></div>';
+          originalConsoleError.apply(console, args);
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/index-DVCeXTok.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DhF6_yfE.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
