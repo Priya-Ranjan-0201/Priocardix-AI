@@ -164,5 +164,5 @@ Visit the URL shown by Vite (e.g. `http://localhost:5177`)
 ---
 
 ## 📄 License
-Academic Project — INT 428 | For educational and demonstration purposes only.
+Academic Project | For educational and demonstration purposes only.
 Not intended as a real medical diagnostic tool.
