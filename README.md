@@ -163,7 +163,11 @@ Example Response
 
 ---
 
+<<<<<<< HEAD
 📄 License
+=======
+## 📄 License
+>>>>>>> 37f60c2d (Updated project files)
 Academic Project | For educational and demonstration purposes only.
 Not intended as a real medical diagnostic tool.
 

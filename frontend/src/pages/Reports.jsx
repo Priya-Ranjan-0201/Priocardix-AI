@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, FileText, Calendar, CheckCircle2, Search, Trash2, AlertTriangle } from 'lucide-react';
+import { Download, FileText, Calendar, CheckCircle2, Search, Trash2, AlertTriangle, User } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
 
 // Default seed records — always shown if no custom history exists
 const DEFAULT_HISTORY = [
@@ -20,33 +22,56 @@ const getRiskColor = (risk) => {
 const Reports = () => {
   const [history, setHistory] = useState([]);
   const [search, setSearch] = useState('');
+  const user = useAuthStore(state => state.user);
+  const [searchParams] = useSearchParams();
+  const specificPatientId = searchParams.get('patientId');
 
-  // Load history once on mount
+  // Load history on mount or when filters change
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
+    let allRecords = DEFAULT_HISTORY;
+    
     if (raw) {
       try {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setHistory(parsed);
-          return;
+          allRecords = parsed;
         }
       } catch (_) {}
     }
-    // First time — seed with defaults
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_HISTORY));
-    setHistory(DEFAULT_HISTORY);
-  }, []);
+    
+    if (!localStorage.getItem(STORAGE_KEY)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_HISTORY));
+    }
+
+    let filteredRecords = allRecords;
+
+    if (user?.role === 'patient') {
+        filteredRecords = allRecords.filter(h => h.patientId === user.uniqueId);
+    } else if (user?.role === 'doctor' && specificPatientId) {
+        filteredRecords = allRecords.filter(h => h.patientId === specificPatientId);
+    }
+    // If doctor with no specific patient, they see all records
+
+    setHistory(filteredRecords);
+  }, [user, specificPatientId]);
 
   const handleDelete = (id) => {
-    const updated = history.filter(h => h.id !== id);
-    setHistory(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const updatedRaw = raw.filter(h => h.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRaw));
+    
+    const updatedFiltered = history.filter(h => h.id !== id);
+    setHistory(updatedFiltered);
   };
 
   const handleClearAll = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_HISTORY));
-    setHistory(DEFAULT_HISTORY);
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    // Keep only the records that are NOT currently shown in this view
+    const recordsToKeep = raw.filter(r => !history.some(h => h.id === r.id));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(recordsToKeep));
+    
+    setHistory([]);
   };
 
   const handleDownloadPDF = (scan) => {
@@ -153,6 +178,7 @@ const Reports = () => {
           <h1 className="text-5xl font-heading font-black mb-2 uppercase tracking-tighter">Medical History</h1>
           <p className="text-gray-400 font-medium">
             {history.length} record{history.length !== 1 ? 's' : ''} found &bull; Saved securely on this device
+            {user?.role === 'doctor' && specificPatientId && ` • Viewing Patient: ${history[0]?.patientName || specificPatientId}`}
           </p>
         </div>
 

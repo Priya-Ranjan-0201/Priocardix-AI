@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, AlertTriangle, ShieldCheck, Database, Zap, Heart, Utensils, Dumbbell, Stethoscope, AlertCircle, ChevronDown } from 'lucide-react';
 import { generateHealthPlan } from '../utils/healthPlan';
+import useAuthStore from '../store/authStore';
 
 const Predict = () => {
+  const user = useAuthStore(state => state.user);
+
   const [loading, setLoading]   = useState(false);
   const [result, setResult]     = useState(null);
   const [healthPlan, setHealthPlan] = useState(null);
@@ -83,6 +86,8 @@ const Predict = () => {
           plan,
           formData,
           topFeature: data.top_contributing_feature,
+          patientId: user?.uniqueId || 'UNKNOWN_ID',
+          patientName: user?.name || 'UNKNOWN_NAME',
         };
         localStorage.setItem('pulseiq_scan_history_v2', JSON.stringify([newEntry, ...savedHistory].slice(0, 15)));
 

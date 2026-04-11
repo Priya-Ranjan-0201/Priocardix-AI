@@ -8,6 +8,7 @@ import Reports from './pages/Reports'
 import Settings from './pages/Settings'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import PatientsAdmin from './pages/PatientsAdmin'
 import useAuthStore from './store/authStore'
 
 const ProtectedRoute = ({ children }) => {
@@ -29,6 +30,7 @@ function App() {
           <Route path="chat" element={<Chatbot />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="patients" element={<PatientsAdmin />} />
         </Route>
         
         <Route path="*" element={<Navigate to="/" replace />} />

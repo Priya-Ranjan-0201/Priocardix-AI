@@ -1,12 +1,13 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Activity, MessageSquare, FileText, Settings, LogOut, Brain } from 'lucide-react';
+import { Home, Activity, MessageSquare, FileText, Settings, LogOut, Brain, Users } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
 const MainLayout = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const logout = useAuthStore(state => state.logout);
+  const user = useAuthStore(state => state.user);
   const [holographic, setHolographic] = React.useState(false);
 
   const handleLogout = () => {
@@ -28,6 +29,7 @@ const MainLayout = () => {
   };
 
   const navItems = [
+    ...(user?.role === 'doctor' ? [{ name: 'Patients Dashboard', path: '/patients', icon: Users }] : []),
     { name: 'Heart Preview 3D', path: '/', icon: Brain },
     { name: 'Check My Heart', path: '/predict', icon: Activity },
     { name: 'AI Assistant', path: '/chat', icon: MessageSquare },
